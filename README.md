@@ -1,5 +1,9 @@
-# IFCap
+# CSE597_003 Course Project
+## Jeongwon Bae (945397461)
+
+---
 Bridging the Modality Gap in Zero-Shot Image Captioning: An Implementation of IFCap
+
 (IFCap: Image-like Retrieval and Frequency-based Entity Filtering for Zero-shot Captioning, EMNLP2024)
 
 ---
