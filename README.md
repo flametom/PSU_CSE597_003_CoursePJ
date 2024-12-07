@@ -1,146 +1,161 @@
 # CSE597_003 Course Project
-## Jeongwon Bae (945397461)
+**Jeongwon Bae (945397461)**
+
+**Bridging the Modality Gap in Zero-Shot Image Captioning: An Implementation of IFCap**
+
+*IFCap: Image-like Retrieval and Frequency-based Entity Filtering for Zero-shot Captioning, EMNLP 2024*
 
 ---
-Bridging the Modality Gap in Zero-Shot Image Captioning: An Implementation of IFCap
 
-(IFCap: Image-like Retrieval and Frequency-based Entity Filtering for Zero-shot Captioning, EMNLP2024)
+## Repository Structure
+- **src/**: Contains the source code for IFCap implementation, including:
+  - Image-like Retrieval (ILR) methods.
+  - Fusion Module (FM) code integrating text and retrieved embeddings.
+  - Frequency-based Entity Filtering (EF) routines.
+  - Model definitions and utility scripts for training and inference.
+
+- **scripts/**: Shell scripts for:
+  - Downloading datasets, annotations, evaluation tools, and checkpoints.
+  - Running training routines for both COCO and Flickr30k datasets.
+  - Performing inference (evaluation) on trained models.
+  - Conducting cross-domain captioning experiments and improvements (e.g., switching to GPT-2 Medium).
+
+After running the download script, the following directories are created:
+- **annotations/**: Holds dataset annotations (e.g., COCO, Flickr30k), including caption data and any auxiliary JSON files used for training and inference.
+- **evaluation/**: Contains code and scripts for computing evaluation metrics (BLEU@4, METEOR, CIDEr, SPICE) and summarizing the experimental results.
+- **checkpoints/**: Includes the authors’ best released weights for IFCap and newly generated weights from your own training sessions. Use these checkpoints to replicate original results or test enhancements (e.g., using GPT-2 Medium).
 
 ---
-### Conda environment
+
+## Environment Setup
+
 ```bash
 conda create -n ifcap python=3.9
 conda activate ifcap
 pip install -r requirements.txt
 ```
 
-### Data preparation
-Download annotations, evaluation tools, and best checkpoints.
-```
+---
+
+## Data Preparation
+Run the download script to retrieve annotations, evaluation tools, and best checkpoints:
+```bash
 bash scripts/download.sh
 ```
+Ensure the corresponding image directories are properly placed (e.g., `annotations/coco/val2014` for COCO images or `annotations/flickr30k/flickr30k-images` for Flickr30k).
 
-(Optional)
-For COCO,
-```
-# place your coco images in annotations/coco/val2014
-
-# image-like retrieval
+(Optional) Perform image-like retrieval and entity filtering as needed using the provided scripts:
+```bash
+# For COCO
 python src/image_like_retrieval.py
-
-# entity filtering
 python src/entity_filtering.py # with IDX=0
-```
 
-For Flickr30k,
-```
-# place your flickr30k images in annotations/flickr30k/flickr30k-images
-
-# image-like retrieval
+# For Flickr30k
 python src/image_like_retrieval.py --domain_source flickr30k --domain_test flickr30k --L 7
-
-# entity filtering
 python src/entity_filtering.py # with IDX=1
 ```
 
-### Training 1 (from scratch provided source code)
-For COCO,
-```
-# bash scripts/train_coco.sh CUDA_DEVICE TEST_NAME RT_PATH
+---
+
+## Training (From Scratch)
+To train on COCO:
+```bash
 bash scripts/train_coco.sh 0 coco annotations/coco/coco_train_seed30_var0.04.json
 ```
 
-For Flickr30k
-```
-# bash scripts/train_flickr30k.sh CUDA_DEVICE TEST_NAME RT_PATH
+To train on Flickr30k:
+```bash
 bash scripts/train_flickr30k.sh 0 flickr annotations/flickr30k/flickr30k_train_seed30_var0.04.json
 ```
 
-### Training 2 (possible improvement - using gpt2-medium)
-For COCO,
-```
+**For Cross-domain and GPT-2 Medium Experiments:**
+- Modify the language model setting in the training scripts to `gpt2-medium`.
+- For COCO:
+```bash
 bash scripts/train_coco_crossdomain.sh 0 coco-new annotations/coco/coco_train_seed30_var0.04.json
 ```
-
-For Flickr30k
-```
+- For Flickr30k:
+```bash
 bash scripts/train_flickr30k_crossdomain.sh 0 flickr-new annotations/flickr30k/flickr30k_train_seed30_var0.04.json
 ```
 
-### Inference 1 (released weight)
-[COCO]
-```
+---
+
+## Inference (Evaluation)
+### Using Released Weights (Original Authors’ Checkpoints)
+- COCO:
+```bash
 bash scripts/eval_coco.sh train_coco 0 \
-	'--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 5' \
-	coco-indomain \
-	4
+    '--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 5' \
+    coco-indomain \
+    4
 ```
 
-[Flickr30k]
-```
+- Flickr30k:
+```bash
 bash scripts/eval_flickr30k.sh train_flickr30k 0 \
-	'--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
-	flickr-indomain \
-	14
+    '--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
+    flickr-indomain \
+    14
 ```
-[COCO -> Flickr30k]
-```
+
+- COCO → Flickr30k:
+```bash
 bash scripts/eval_flickr30k.sh train_coco 0 \
-	'--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
-	coco-indomain \
-	5 
+    '--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
+    coco-indomain \
+    5
 ```
 
-[Flickr30k -> COCO]
-```
+- Flickr30k → COCO:
+```bash
 bash scripts/eval_coco.sh train_flickr30k 0 \
-	'--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
-	flickr-indomain \
-	14
+    '--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
+    flickr-indomain \
+    14
 ```
 
-### Inference 2 (from scratch provided source code)
-[COCO -> Flickr30k]
-```
+### Using Newly Trained Weights (From Scratch)
+- COCO → Flickr30k:
+```bash
 bash scripts/eval_flickr30k.sh train_coco 0 \
-	'--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
-	coco \
-	4
+    '--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
+    coco \
+    4
 ```
 
-[Flickr30k -> COCO]
-```
+- Flickr30k → COCO:
+```bash
 bash scripts/eval_coco.sh train_flickr30k 0 \
-	'--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
-	flickr \
-	12 # or your lastest epochs
+    '--entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
+    flickr \
+    12 # or your latest epochs
 ```
 
-### Inference 3 (possible improvement - using gpt2-medium)
-[COCO -> Flickr30k]
-```
+### Using GPT-2 Medium for Improvements
+- COCO → Flickr30k:
+```bash
 bash scripts/eval_flickr30k.sh train_coco_crossdomain 0 \
-	'--language_model gpt2-medium --entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
-	coco-new \
-	4
+    '--language_model gpt2-medium --entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
+    coco-new \
+    4
 ```
 
-[Flickr30k -> COCO]
-```
+- Flickr30k → COCO:
+```bash
 bash scripts/eval_coco.sh train_flickr30k_crossdomain 0 \
-	'--language_model gpt2-medium --entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
-	flickr-new \
-	16 # or your lastest epochs
+    '--language_model gpt2-medium --entity_filtering --retrieved_info caption_coco_image_coco_9.json --K 4' \
+    flickr-new \
+    16 # or your latest epochs
 ```
 
-## Reference
-```
-@article{lee2024ifcap,
-  title={IFCap: Image-like Retrieval and Frequency-based Entity Filtering for Zero-shot Captioning},
-  author={Lee, Soeun and Kim, Si-Woo and Kim, Taewhan and Kim, Dong-Jin},
-  journal={arXiv preprint arXiv:2409.18046},
-  year={2024}
-}
-```
+---
 
-***
+## Notes
+- Ensure that both training and inference steps explicitly declare the correct language model (either `gpt2` or `gpt2-medium`) to maintain consistency.
+- The provided scripts and commands reproduce the key experiments and improvements discussed in our project report.
+
+---
+
+## Contact
+For questions or issues with the code or replication, please contact Jeongwon Bae.
