@@ -22,6 +22,8 @@
   - Performing inference (evaluation) on trained models.
   - Conducting cross-domain captioning experiments and improvements (e.g., switching to GPT-2 Medium).
 
+- **capture/**: Screenshots of the inference log.
+
 After running the download script, the following directories are created:
 - **annotations/**: Holds dataset annotations (e.g., COCO, Flickr30k), including caption data and any auxiliary JSON files used for training and inference.
 - **evaluation/**: Contains code and scripts for computing evaluation metrics (BLEU@4, METEOR, CIDEr, SPICE) and summarizing the experimental results.
