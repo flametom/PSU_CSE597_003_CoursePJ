@@ -1,6 +1,8 @@
 # CSE597_003 Course Project
 **Jeongwon Bae (945397461)**
 
+---
+
 **Bridging the Modality Gap in Zero-Shot Image Captioning: An Implementation of IFCap**
 
 *IFCap: Image-like Retrieval and Frequency-based Entity Filtering for Zero-shot Captioning, EMNLP 2024*
@@ -121,7 +123,7 @@ bash scripts/eval_coco.sh train_flickr30k 0 \
 bash scripts/eval_flickr30k.sh train_coco 0 \
     '--entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
     coco \
-    4
+    4 # or your latest epochs
 ```
 
 - Flickr30k → COCO:
@@ -138,7 +140,7 @@ bash scripts/eval_coco.sh train_flickr30k 0 \
 bash scripts/eval_flickr30k.sh train_coco_crossdomain 0 \
     '--language_model gpt2-medium --entity_filtering --retrieved_info caption_flickr30k_image_flickr30k_7.json --K 3' \
     coco-new \
-    4
+    4 # or your latest epochs
 ```
 
 - Flickr30k → COCO:
